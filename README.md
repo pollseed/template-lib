@@ -1,17 +1,14 @@
-##This lib is `Deprecated`until to making express-template
+# Summary
 
-
-## TODO
-
-```
+## Get Started
+```.sh
+git clone git@github.com:pollseed/template-lib.git
+cd template-lib
 npm install -g express-generator node-dev
-
-express hoge
 npm install
-npm install --save here
+
 node-dev ./bin/www
 ```
-
 
 # API
 
@@ -26,12 +23,12 @@ GET /html5
 
 |Name|Type|Description|
 |:--:|:--:|:--:|
-|ie|boolean|The IE-tag availability.|
+|ie|string|The IE-tag availability.|
 
 #### Example
 
 ```
 {
-  "ie": true
+  "ie": 1
 }
 ```
