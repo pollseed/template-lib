@@ -61,6 +61,7 @@ GET /mysql_ddl/:type
 |:--:|:--:|
 |schema|schema DDL.|
 |create|create DDL.|
+|partition|partition DDL.|
 |insert|insert DML.|
 |update|update DML.|
 |column|column DDL.|
