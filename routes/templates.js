@@ -60,6 +60,21 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = <__collation__>;
 */);
 
+const DDL_PARTITION = here(/*
+CREATE TABLE <__new_table__> (
+    id INT NOT NULL,
+    name VARCHAR(30),
+    separated DATE NOT NULL DEFAULT '9999-12-31',
+    partition_id INT NOT NULL
+)
+PARTITION BY RANGE (partition_id) (
+PARTITION p0 VALUES LESS THAN (11),
+PARTITION p1 VALUES LESS THAN (21),
+PARTITION p2 VALUES LESS THAN (31),
+PARTITION p3 VALUES LESS THAN (41)
+);
+*/);
+
 const DML_INSERT = here(/*
 INSERT INTO <__new_table__> (`name`, `create_date`) VALUES ('hoge', now());
 */);
@@ -86,6 +101,9 @@ router.get('/mysql_ddl/:type', (req, res, next) => {
       break;
     case 'create':
       template = replace_new_table(DDL_CREATE, req).replace(/<__collation__>/g, req.query.collation);
+      break;
+    case 'partition':
+      template = replace_new_table(DDL_PARTITION, req);
       break;
     case 'insert':
       template = replace_new_table(DML_INSERT, req);
