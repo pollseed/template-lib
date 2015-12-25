@@ -46,8 +46,54 @@ router.get('/html5', (req, res, next) => {
   }
 });
 
+const DDL_SCHEMA = here(/*
+CREATE SCHEMA <__new_schema__> DEFAULT CHARACTER SET <__collation__>;
+*/);
+
+const DDL_CREATE = here(/*
+CREATE TABLE <__new_table__> (
+  `id` INT NOT NULL AUTO_INCREMENT COMMENT '',
+  `name` VARCHAR(45) NULL COMMENT '',
+  `create_date` DATETIME NULL COMMENT '',
+  PRIMARY KEY (`id`)  COMMENT '')
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = <__collation__>;
+*/);
+
+const DDL_INSERT = here(/*
+INSERT INTO <__new_table__> (`name`, `create_date`) VALUES ('hoge', now());
+*/);
+
+const DDL_UPDATE = here(/*
+UPDATE <__new_table__> SET `name`='fuga', `create_date`=now() WHERE `id`='1';
+*/);
+
+router.get('/mysql_ddl/:type', (req, res, next) => {
+  let type = req.params.type, template = '';
+  switch (type) {
+    case 'schema':
+      template = DDL_SCHEMA.replace(/<__new_schema__>/g, req.query.schema).replace(/<__collation__>/g, req.query.collation);
+      break;
+    case 'create':
+      template = replace_new_table(DDL_CREATE, req.query).replace(/<__collation__>/g, req.query.collation);
+      break;
+    case 'insert':
+      template = replace_new_table(DDL_INSERT, req.query);
+      break;
+    case 'update':
+      template = replace_new_table(DDL_UPDATE, req.query);
+      break;
+    default:
+      break;
+  }
+  res.json({ "mysql-ddl-template": template });
+});
+
+function replace_new_table(target, q) {
+  return target.replace(/<__new_table__>/g, q.table);
+}
+
 function validation(query) {
-  // ie
   let ie = query.ie;
   if (ie != 0 && ie != 1 && ie !== undefined) {
     return false;
