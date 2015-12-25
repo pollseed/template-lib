@@ -33,7 +33,7 @@ const HTML_TAIL = here(/*
 */);
 
 router.get('/html5', (req, res, next) => {
-  if (validation(req.query)) {
+  if (validationIe(req.query)) {
     let template = '', ie = req.query.ie;
     if (ie == 0 || ie === undefined) {
       template = `${HTML_HEAD}${HTML_TAIL}`;
@@ -60,12 +60,22 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = <__collation__>;
 */);
 
-const DDL_INSERT = here(/*
+const DML_INSERT = here(/*
 INSERT INTO <__new_table__> (`name`, `create_date`) VALUES ('hoge', now());
 */);
 
-const DDL_UPDATE = here(/*
+const DML_UPDATE = here(/*
 UPDATE <__new_table__> SET `name`='fuga', `create_date`=now() WHERE `id`='1';
+*/);
+
+const DDL_ADD_COLUMN = here(/*
+ALTER TABLE <__new_table__>
+ADD COLUMN `update_date` DATETIME NULL DEFAULT NULL COMMENT '' AFTER `create_date`;
+*/);
+
+const DDL_ADD_INDEX = here(/*
+ALTER TABLE <__new_table__>
+ADD INDEX `id_name_idx` (`id` ASC, `name` ASC)  COMMENT '';
 */);
 
 router.get('/mysql_ddl/:type', (req, res, next) => {
@@ -75,13 +85,19 @@ router.get('/mysql_ddl/:type', (req, res, next) => {
       template = DDL_SCHEMA.replace(/<__new_schema__>/g, req.query.schema).replace(/<__collation__>/g, req.query.collation);
       break;
     case 'create':
-      template = replace_new_table(DDL_CREATE, req.query).replace(/<__collation__>/g, req.query.collation);
+      template = replace_new_table(DDL_CREATE, req).replace(/<__collation__>/g, req.query.collation);
       break;
     case 'insert':
-      template = replace_new_table(DDL_INSERT, req.query);
+      template = replace_new_table(DML_INSERT, req);
       break;
     case 'update':
-      template = replace_new_table(DDL_UPDATE, req.query);
+      template = replace_new_table(DML_UPDATE, req);
+      break;
+    case 'column':
+      template = replace_new_table(DDL_ADD_COLUMN, req);
+      break;
+    case 'index':
+      template = replace_new_table(DDL_ADD_INDEX, req);
       break;
     default:
       break;
@@ -89,11 +105,11 @@ router.get('/mysql_ddl/:type', (req, res, next) => {
   res.json({ "mysql-ddl-template": template });
 });
 
-function replace_new_table(target, q) {
-  return target.replace(/<__new_table__>/g, q.table);
+function replace_new_table(target, req) {
+  return target.replace(/<__new_table__>/g, req.query.table);
 }
 
-function validation(query) {
+function validationIe(query) {
   let ie = query.ie;
   if (ie != 0 && ie != 1 && ie !== undefined) {
     return false;
