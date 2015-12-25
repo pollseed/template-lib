@@ -63,6 +63,8 @@ GET /mysql_ddl/:type
 |create|create DDL.|
 |insert|insert DML.|
 |update|update DML.|
+|column|update DML.|
+|index|update DML.|
 
 #### Parameters
 
