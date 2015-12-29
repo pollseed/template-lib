@@ -1,5 +1,7 @@
 # Summary
 
+[![Join the chat at https://gitter.im/pollseed/template-lib](https://badges.gitter.im/pollseed/template-lib.svg)](https://gitter.im/pollseed/template-lib?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ## Get Started
 ```.sh
 git clone git@github.com:pollseed/template-lib.git
